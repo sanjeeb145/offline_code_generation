@@ -3,6 +3,7 @@ package com.aicodepilot.ui.dialogs;
 import com.aicodepilot.generator.CodeGenerator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
 
@@ -112,8 +113,8 @@ public class GenerateCodeDialog extends Dialog {
     @Override
     protected void okPressed() {
         // Validate
-        if (entityNameText.getText().isBlank()) {
-            setErrorMessage("Entity name is required.");
+        if (entityNameText.getText().trim().isEmpty()) {
+            showErrorMessage("Entity name is required.");
             return;
         }
 
@@ -134,7 +135,7 @@ public class GenerateCodeDialog extends Dialog {
     // Helpers
     // -----------------------------------------------------------------------
 
-    private void setErrorMessage(String msg) {
+    private void showErrorMessage(String msg) {
         // Simple inline error — in production use IInputValidator
         MessageBox mb = new MessageBox(getShell(), SWT.ICON_WARNING | SWT.OK);
         mb.setMessage(msg);
