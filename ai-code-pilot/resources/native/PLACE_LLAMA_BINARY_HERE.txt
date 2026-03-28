@@ -1,0 +1,13 @@
+Place the llama.cpp binary here:
+
+  Linux x64  → llama-cli-linux-x64
+  Windows x64 → llama-cli-windows-x64.exe
+  macOS x64  → llama-cli-macos-x64
+
+Download from:
+  https://github.com/ggerganov/llama.cpp/releases
+
+Or run: bash scripts/download-model.sh (auto-downloads)
+
+Alternatively, set the binary path in:
+  Window → Preferences → AI Code Pilot → Model Settings → llama.cpp Binary

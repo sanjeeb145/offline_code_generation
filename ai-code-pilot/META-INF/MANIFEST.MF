@@ -1,0 +1,39 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: AI Code Pilot
+Bundle-SymbolicName: com.aicodepilot;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.aicodepilot.Activator
+Bundle-Vendor: AI Code Pilot
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Require-Bundle:
+ org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.jface.text,
+ org.eclipse.swt,
+ org.eclipse.jface,
+ org.eclipse.text,
+ org.eclipse.core.expressions,
+ org.eclipse.ui.console
+Bundle-ClassPath: .,
+ lib/javaparser-core-3.25.8.jar,
+ lib/javaparser-symbol-solver-core-3.25.8.jar,
+ lib/json-20231013.jar,
+ lib/guava-32.1.3-jre.jar,
+ lib/slf4j-api-2.0.9.jar,
+ lib/slf4j-simple-2.0.9.jar,
+ lib/hnswlib-core-1.1.0.jar,
+ lib/ai.djl.api-0.26.0.jar
+Export-Package: com.aicodepilot.engine,
+ com.aicodepilot.analyzer,
+ com.aicodepilot.generator,
+ com.aicodepilot.ui.handlers
+Import-Package: ai.djl.*,* 
+DynamicImport-Package: *
+Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: com.aicodepilot

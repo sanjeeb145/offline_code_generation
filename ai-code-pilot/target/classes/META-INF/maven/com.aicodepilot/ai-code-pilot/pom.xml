@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.aicodepilot</groupId>
+  <artifactId>ai-code-pilot</artifactId>
+  <version>1.0.0</version>
+
+  <!--
+    IMPORTANT: Changed from 'eclipse-plugin' to 'jar'
+    This means you can now simply run:  mvn clean install
+    and it will produce:  target/com.aicodepilot_1.0.0.jar
+    Copy that JAR to your Eclipse dropins/ folder.
+  -->
+  <packaging>jar</packaging>
+
+  <name>AI Code Pilot</name>
+  <description>Eclipse plugin - Offline AI-powered code assistance for Java developers</description>
+
+  <properties>
+    <java.version>17</java.version>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+
+    <!-- ================================================================
+         Eclipse Platform APIs
+         scope=provided means: needed to compile BUT not bundled in JAR
+         (Eclipse already has these JARs at runtime)
+         ================================================================ -->
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.core.runtime</artifactId>
+      <version>3.29.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.ui.workbench</artifactId>
+      <version>3.130.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.swt</artifactId>
+      <version>3.125.0</version>
+      <!-- Available at compile time so Maven/Eclipse can resolve SWT types during builds outside Eclipse -->
+      <!-- Note: shade plugin excludes Eclipse bundles from the final JAR, so they won't be packaged. -->
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.jface</artifactId>
+      <version>3.33.0</version>
+      <!-- Keep JFace on the compile classpath for local builds -->
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.core.resources</artifactId>
+      <version>3.20.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.text</artifactId>
+      <version>3.14.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.jface.text</artifactId>
+      <version>3.25.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.ui.editors</artifactId>
+      <version>3.17.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.ui.workbench.texteditor</artifactId>
+      <version>3.17.200</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jdt</groupId>
+      <artifactId>org.eclipse.jdt.core</artifactId>
+      <version>3.36.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jdt</groupId>
+      <artifactId>org.eclipse.jdt.ui</artifactId>
+      <version>3.31.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.framework</artifactId>
+      <version>1.10.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+    <groupId>ai.djl</groupId>
+    <artifactId>api</artifactId>
+    <version>0.26.0</version> <!-- or latest -->
+</dependency>
+
+ <!-- Dataset -->
+    <dependency>
+        <groupId>ai.djl</groupId>
+        <artifactId>basicdataset</artifactId>
+        <version>0.26.0</version>
+    </dependency>
+
+    <!-- PyTorch Engine -->
+    <dependency>
+        <groupId>ai.djl.pytorch</groupId>
+        <artifactId>pytorch-engine</artifactId>
+        <version>0.26.0</version>
+    </dependency>
+
+    
+    <!-- ================================================================
+         Runtime Dependencies
+         These WILL be bundled inside the final fat JAR
+         ================================================================ -->
+
+    <!-- Java AST analysis (no AI needed for structural analysis) -->
+    <dependency>
+      <groupId>com.github.javaparser</groupId>
+      <artifactId>javaparser-core</artifactId>
+      <version>3.25.8</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.javaparser</groupId>
+      <artifactId>javaparser-symbol-solver-core</artifactId>
+      <version>3.25.8</version>
+    </dependency>
+
+    <!-- HNSW vector index for RAG context retrieval -->
+    <dependency>
+      <groupId>com.github.jelmerk</groupId>
+      <artifactId>hnswlib-core</artifactId>
+      <version>1.1.0</version>
+    </dependency>
+
+    <!-- JSON -->
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20231013</version>
+    </dependency>
+
+    <!-- Google Guava -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>32.1.3-jre</version>
+    </dependency>
+
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>2.0.9</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>2.0.9</version>
+    </dependency>
+
+    <!-- ================================================================
+         Test Dependencies
+         ================================================================ -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.10.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>5.7.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.24.2</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <id>eclipse-releases</id>
+      <name>Eclipse Releases</name>
+      <url>https://repo.eclipse.org/content/groups/releases/</url>
+    </repository>
+  </repositories>
+
+  <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+
+    <plugins>
+
+      <!-- ================================================================
+           1. Compiler Plugin - Java 17
+           ================================================================ -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.12.1</version>
+        <configuration>
+          <source>17</source>
+          <target>17</target>
+          <encoding>UTF-8</encoding>
+          <!--
+            failOnError=false allows build to succeed even if some Eclipse API
+            classes are not resolved (they exist at Eclipse runtime, not in Maven)
+          -->
+          <failOnError>false</failOnError>
+        </configuration>
+      </plugin>
+
+      <!-- ================================================================
+           2. Resources Plugin - copy plugin.xml and META-INF into JAR
+           ================================================================ -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>copy-plugin-xml</id>
+            <phase>process-resources</phase>
+            <goals><goal>copy-resources</goal></goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+              <resources>
+                <!-- Copy plugin.xml to root of JAR -->
+                <resource>
+                  <directory>${project.basedir}</directory>
+                  <includes>
+                    <include>plugin.xml</include>
+                  </includes>
+                </resource>
+                <!-- Copy META-INF (MANIFEST.MF) -->
+                <resource>
+                  <directory>${project.basedir}</directory>
+                  <includes>
+                    <include>META-INF/**</include>
+                  </includes>
+                </resource>
+                <!-- Copy icons and templates -->
+                <resource>
+                  <directory>${project.basedir}/resources</directory>
+                  <targetPath>resources</targetPath>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- ================================================================
+           3. Shade Plugin - creates ONE fat JAR with all dependencies
+              Final JAR name: target/com.aicodepilot_1.0.0.jar
+              This is the JAR you copy to Eclipse dropins/
+           ================================================================ -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals><goal>shade</goal></goals>
+            <configuration>
+
+              <!-- Final JAR filename in target/ -->
+              <finalName>com.aicodepilot_1.0.0</finalName>
+
+              <!-- Do NOT bundle Eclipse/OSGi JARs - they are in Eclipse already -->
+              <artifactSet>
+                <excludes>
+                  <exclude>org.eclipse.platform:*</exclude>
+                  <exclude>org.eclipse.jdt:*</exclude>
+                  <exclude>org.osgi:*</exclude>
+                </excludes>
+              </artifactSet>
+
+              <transformers>
+                <!-- Merge META-INF/services files from all JARs -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                <!-- Set OSGi bundle headers in MANIFEST.MF -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <manifestEntries>
+                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                    <Bundle-Name>AI Code Pilot</Bundle-Name>
+                    <Bundle-SymbolicName>com.aicodepilot;singleton:=true</Bundle-SymbolicName>
+                    <Bundle-Version>1.0.0</Bundle-Version>
+                    <Bundle-Activator>com.aicodepilot.Activator</Bundle-Activator>
+                    <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
+                    <Bundle-RequiredExecutionEnvironment>JavaSE-17</Bundle-RequiredExecutionEnvironment>
+                    <Require-Bundle>org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.jdt.core,org.eclipse.jdt.ui,org.eclipse.swt,org.eclipse.jface,org.eclipse.text,org.eclipse.core.resources</Require-Bundle>
+                  </manifestEntries>
+                </transformer>
+              </transformers>
+
+              <!-- Remove signature files that break fat JARs -->
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <exclude>META-INF/MANIFEST.MF</exclude>
+                    <exclude>module-info.class</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- ================================================================
+           4. Surefire - JUnit 5 test runner
+              Skips UI tests that require Eclipse SWT display
+           ================================================================ -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.2</version>
+        <configuration>
+          <useModulePath>false</useModulePath>
+          <skipTests>true</skipTests>
+          <!--
+            Tests are skipped by default because Eclipse API classes
+            (SWT Display etc.) are not available outside Eclipse.
+            To run tests: mvn clean install -DskipTests=false
+          -->
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>
