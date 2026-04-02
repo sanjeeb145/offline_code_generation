@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.aicodepilot</groupId>
+  <artifactId>ai-code-pilot</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+  <name>AI Code Assist</name>
+  <description>Eclipse plugin - Offline AI code assistance for Java developers</description>
+
+  <!--
+    ╔══════════════════════════════════════════════════════════════╗
+    ║  BUILD INSTRUCTIONS                                          ║
+    ║                                                              ║
+    ║  Set ECLIPSE_HOME first, then run mvn clean package:         ║
+    ║                                                              ║
+    ║  export ECLIPSE_HOME=/path/to/your/eclipse                   ║
+    ║  mvn clean package -DskipTests                               ║
+    ║                                                              ║
+    ║  Or use the build script which sets it automatically:        ║
+    ║  bash scripts/build.sh                                       ║
+    ╚══════════════════════════════════════════════════════════════╝
+  -->
+
+  <properties>
+    <java.version>21</java.version>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <plugin.jar.name>com.aicodepilot_1.0.0</plugin.jar.name>
+
+    <!--
+      Eclipse installation path — set via:
+        export ECLIPSE_HOME=/path/to/eclipse
+        mvn clean package -DskipTests
+      OR pass directly:
+        mvn clean package -Declipse.home=/path/to/eclipse
+    -->
+    <eclipse.home>${env.ECLIPSE_HOME}</eclipse.home>
+    <eclipse.plugins.dir>${eclipse.home}/plugins</eclipse.plugins.dir>
+  </properties>
+
+  <dependencies>
+
+    <!-- ================================================================
+         ECLIPSE APIs — resolved from your local Eclipse installation.
+         scope=system means: use these JARs for compilation but do NOT
+         bundle them into our plugin JAR.
+         Eclipse already has them at runtime.
+         ================================================================ -->
+
+    <!-- Core Runtime (IProgressMonitor, IStatus, Platform, ILog) -->
+   
+ <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>core.runtime</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.core.runtime_3.32.0.v20241003-0436.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>core.resources</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.core.resources_3.22.0.v20241001-1711.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>core.jobs</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.core.jobs_3.15.400.v20240619-0602.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>core.commands</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.core.commands_3.12.200.v20240627-1019.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>core.expressions</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.core.expressions_3.9.400.v20240413-1529.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>ui.workbench</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.ui.workbench_3.134.0.v20241107-2150.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>ui</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.ui_3.207.0.v20241030-1436.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>ui.editors</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.ui.editors_3.19.0.v20241106-0945.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>ui.texteditor</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.ui.workbench.texteditor_3.19.0.v20241112-1917.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>ui.console</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.ui.console_3.14.200.v20240918-1457.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>ui.ide</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.ui.ide_3.22.400.v20241031-2136.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>swt</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.swt_3.128.0.v20241113-2009.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>jface</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.jface_3.35.100.v20241003-1431.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>jface.text</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.jface.text_3.26.0.v20241101-1729.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>text</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.text_3.14.200.v20240915-0736.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>jdt.core</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.jdt.core_3.40.0.v20241118-1641.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>jdt.ui</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.jdt.ui_3.33.200.v20241108-1930.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>eclipse</groupId>
+      <artifactId>osgi</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>/home/user1/soft/eclipse_new/eclipse-jee-2024-12-R-linux-gtk-x86_64/eclipse/plugins/org.eclipse.osgi_3.22.0.v20241030-2121.jar</systemPath>
+    </dependency>
+    
+    <!-- ================================================================
+         RUNTIME DEPENDENCIES — bundled inside lib/ inside the plugin JAR
+         ================================================================ -->
+
+    <!-- Java AST parsing -->
+    <dependency>
+      <groupId>com.github.javaparser</groupId>
+      <artifactId>javaparser-core</artifactId>
+      <version>3.25.8</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.javaparser</groupId>
+      <artifactId>javaparser-symbol-solver-core</artifactId>
+      <version>3.25.8</version>
+    </dependency>
+
+    <!-- JSON -->
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20231013</version>
+    </dependency>
+
+    <!-- Google Guava -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>32.1.3-jre</version>
+    </dependency>
+
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>2.0.9</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>2.0.9</version>
+    </dependency>
+
+    <!-- Javassist (needed by javaparser symbol solver) -->
+    <dependency>
+      <groupId>org.javassist</groupId>
+      <artifactId>javassist</artifactId>
+      <version>3.29.2-GA</version>
+    </dependency>
+
+    <!-- ================================================================
+         TEST DEPENDENCIES
+         ================================================================ -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.10.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>5.7.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.24.2</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+    <outputDirectory>target/classes</outputDirectory>
+
+    <plugins>
+
+      <!-- ================================================================
+           1. Compiler — Java 21, strict compilation
+              failOnError=true so we KNOW if compilation breaks
+           ================================================================ -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <source>21</source>
+          <target>21</target>
+          <encoding>UTF-8</encoding>
+          <!-- true — fail if compilation breaks, so we know immediately -->
+          <failOnError>true</failOnError>
+          <showWarnings>false</showWarnings>
+          <compilerArgs>
+            <!-- Allow system-scope JARs in compilation -->
+            <arg>-proc:none</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+
+      <!-- ================================================================
+           2. Dependency Plugin — copy runtime JARs to target/lib/
+           ================================================================ -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.7.0</version>
+        <executions>
+          <execution>
+            <id>copy-runtime-deps</id>
+            <phase>prepare-package</phase>
+            <goals><goal>copy-dependencies</goal></goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+              <!-- Only runtime scope (NOT system/provided Eclipse JARs) -->
+              <includeScope>runtime</includeScope>
+              <excludeScope>system</excludeScope>
+              <stripVersion>false</stripVersion>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- ================================================================
+           3. Resources Plugin — copy plugin.xml + META-INF into classes/
+           ================================================================ -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>copy-plugin-resources</id>
+            <phase>process-resources</phase>
+            <goals><goal>copy-resources</goal></goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}</directory>
+                  <includes>
+                    <include>plugin.xml</include>
+                    <include>META-INF/MANIFEST.MF</include>
+                  </includes>
+                  <filtering>false</filtering>
+                </resource>
+                <resource>
+                  <directory>${project.basedir}/resources</directory>
+                  <targetPath>resources</targetPath>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- ================================================================
+           4. AntRun — auto-generate MANIFEST.MF Bundle-ClassPath
+              and inject lib/ folder INTO the JAR
+           ================================================================ -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+
+          <!-- 4a. Generate MANIFEST with exact lib/*.jar filenames -->
+          <execution>
+            <id>generate-manifest</id>
+            <phase>prepare-package</phase>
+            <goals><goal>run</goal></goals>
+            <configuration>
+              <target>
+                <pathconvert property="bundle.classpath"
+                             pathsep=",&#10; lib/"
+                             dirsep="/">
+                  <fileset dir="${project.build.directory}/lib">
+                    <include name="*.jar"/>
+                  </fileset>
+                  <mapper type="flatten"/>
+                </pathconvert>
+
+                <echo file="${project.build.outputDirectory}/META-INF/MANIFEST.MF"
+                      append="false">Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: AI Code Pilot
+Bundle-SymbolicName: com.aicodepilot;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: AI Code Pilot
+Bundle-Description: Offline AI-powered code assistance for Java developers
+Bundle-Activator: com.aicodepilot.Activator
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.jface.text,
+ org.eclipse.swt,
+ org.eclipse.jface,
+ org.eclipse.text,
+ org.eclipse.core.expressions,
+ org.eclipse.ui.console
+Bundle-ClassPath: .,
+ lib/${bundle.classpath}
+Export-Package: com.aicodepilot.engine,
+ com.aicodepilot.analyzer,
+ com.aicodepilot.generator,
+ com.aicodepilot.model
+
+</echo>
+                <echo message="MANIFEST.MF generated with Bundle-ClassPath"/>
+              </target>
+            </configuration>
+          </execution>
+
+          <!-- 4b. Inject lib/ folder INTO the final JAR -->
+          <execution>
+            <id>inject-lib-into-jar</id>
+            <phase>package</phase>
+            <goals><goal>run</goal></goals>
+            <configuration>
+              <target>
+                <jar destfile="${project.build.directory}/${plugin.jar.name}.jar"
+                     update="true">
+                  <fileset dir="${project.build.directory}">
+                    <include name="lib/*.jar"/>
+                  </fileset>
+                </jar>
+                <echo message=""/>
+                <echo message="=== BUILD SUCCESSFUL ==="/>
+                <echo message="JAR: target/${plugin.jar.name}.jar"/>
+                <echo message=""/>
+                <echo message="Install:"/>
+                <echo message="  cp target/${plugin.jar.name}.jar ${eclipse.home}/dropins/"/>
+                <echo message="  eclipse -clean"/>
+              </target>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+
+      <!-- ================================================================
+           5. JAR Plugin — use our MANIFEST.MF (not auto-generated)
+           ================================================================ -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.1</version>
+        <configuration>
+          <finalName>${plugin.jar.name}</finalName>
+          <archive>
+            <manifestFile>
+              ${project.build.outputDirectory}/META-INF/MANIFEST.MF
+            </manifestFile>
+            <addMavenDescriptor>false</addMavenDescriptor>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <!-- ================================================================
+           6. Surefire — skip tests (need Eclipse Display for SWT)
+           ================================================================ -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.5</version>
+        <configuration>
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>

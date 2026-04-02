@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+  <!-- ============================================================ -->
+  <!-- VIEW CATEGORIES                                               -->
+  <!-- ============================================================ -->
+  <extension point="org.eclipse.ui.views">
+    <category id="com.aicodepilot.category" name="AI Code Pilot"/>
+
+    <view
+        id="com.aicodepilot.views.SuggestionsView"
+        name="AI Code Suggestions"
+        class="com.aicodepilot.ui.views.SuggestionsView"
+        category="com.aicodepilot.category"
+        allowMultiple="false"/>
+
+    <view
+        id="com.aicodepilot.views.AnalyzerView"
+        name="AI Code Analyzer"
+        class="com.aicodepilot.ui.views.AnalyzerView"
+        category="com.aicodepilot.category"
+        allowMultiple="false"/>
+
+    <view
+        id="com.aicodepilot.views.DevOpsView"
+        name="AI DevOps Assistant"
+        class="com.aicodepilot.ui.views.DevOpsView"
+        category="com.aicodepilot.category"
+        allowMultiple="false"/>
+  </extension>
+
+  <!-- ============================================================ -->
+  <!-- COMMANDS                                                      -->
+  <!-- ============================================================ -->
+  <extension point="org.eclipse.ui.commands">
+    <command id="com.aicodepilot.commands.analyzeCode"
+             name="Analyze Code with AI"
+             description="Analyze selected Java code using local AI"/>
+    <command id="com.aicodepilot.commands.generateCode"
+             name="Generate Code with AI"
+             description="Generate boilerplate code using local AI"/>
+    <command id="com.aicodepilot.commands.detectBugs"
+             name="Detect Bugs with AI"
+             description="Detect potential bugs and anti-patterns"/>
+    <command id="com.aicodepilot.commands.refactorCode"
+             name="Suggest Refactoring"
+             description="Get AI-powered refactoring suggestions"/>
+    <command id="com.aicodepilot.commands.generateDevOps"
+             name="Generate DevOps Artifacts"
+             description="Generate Dockerfile, K8s YAML, Kafka configs"/>
+    <command id="com.aicodepilot.commands.explainCode"
+             name="Explain Code"
+             description="Get plain-English explanation of selected code"/>
+  </extension>
+
+  <!-- ============================================================ -->
+  <!-- HANDLERS                                                      -->
+  <!-- ============================================================ -->
+  <extension point="org.eclipse.ui.handlers">
+    <handler commandId="com.aicodepilot.commands.analyzeCode"
+             class="com.aicodepilot.ui.handlers.AnalyzeCodeHandler"/>
+    <handler commandId="com.aicodepilot.commands.generateCode"
+             class="com.aicodepilot.ui.handlers.GenerateCodeHandler"/>
+    <handler commandId="com.aicodepilot.commands.detectBugs"
+             class="com.aicodepilot.ui.handlers.DetectBugsHandler"/>
+    <handler commandId="com.aicodepilot.commands.refactorCode"
+             class="com.aicodepilot.ui.handlers.RefactorCodeHandler"/>
+    <handler commandId="com.aicodepilot.commands.generateDevOps"
+             class="com.aicodepilot.ui.handlers.DevOpsHandler"/>
+    <handler commandId="com.aicodepilot.commands.explainCode"
+             class="com.aicodepilot.ui.handlers.ExplainCodeHandler"/>
+  </extension>
+
+  <!-- ============================================================ -->
+  <!-- MENUS — Editor right-click + main menu                       -->
+  <!-- ============================================================ -->
+  <extension point="org.eclipse.ui.menus">
+
+    <!-- Java Editor right-click context menu -->
+    <menuContribution
+        locationURI="popup:org.eclipse.jdt.ui.javaeditor.CompilationUnitEditor">
+      <menu id="com.aicodepilot.editorctx" label="AI Code Pilot">
+        <command commandId="com.aicodepilot.commands.analyzeCode"
+                 label="Analyze Selection"/>
+        <command commandId="com.aicodepilot.commands.explainCode"
+                 label="Explain Code"/>
+        <command commandId="com.aicodepilot.commands.detectBugs"
+                 label="Detect Bugs"/>
+        <command commandId="com.aicodepilot.commands.refactorCode"
+                 label="Suggest Refactoring"/>
+        <separator/>
+        <command commandId="com.aicodepilot.commands.generateCode"
+                 label="Generate Code Here"/>
+        <command commandId="com.aicodepilot.commands.generateDevOps"
+                 label="Generate DevOps Artifacts"/>
+      </menu>
+    </menuContribution>
+
+    <!-- Package Explorer right-click -->
+    <menuContribution
+        locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
+      <menu id="com.aicodepilot.pkgctx" label="AI Code Pilot">
+        <command commandId="com.aicodepilot.commands.analyzeCode"
+                 label="Analyze File"/>
+        <command commandId="com.aicodepilot.commands.generateCode"
+                 label="Generate Boilerplate"/>
+        <command commandId="com.aicodepilot.commands.generateDevOps"
+                 label="Generate DevOps Artifacts"/>
+      </menu>
+    </menuContribution>
+
+    <!-- Top menu bar -->
+    <menuContribution
+        locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+      <menu id="com.aicodepilot.mainmenu" label="AI Pilot">
+        <command commandId="com.aicodepilot.commands.analyzeCode"   label="Analyze Code"/>
+        <command commandId="com.aicodepilot.commands.generateCode"  label="Generate Code"/>
+        <command commandId="com.aicodepilot.commands.detectBugs"    label="Detect Bugs"/>
+        <command commandId="com.aicodepilot.commands.refactorCode"  label="Suggest Refactoring"/>
+        <separator/>
+        <command commandId="com.aicodepilot.commands.generateDevOps" label="Generate DevOps Artifacts"/>
+      </menu>
+    </menuContribution>
+
+    <!-- Toolbar -->
+    <menuContribution
+        locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+      <toolbar id="com.aicodepilot.toolbar">
+        <command commandId="com.aicodepilot.commands.analyzeCode"
+                 label="AI Analyze"
+                 tooltip="Analyze selected code with AI (Ctrl+Shift+A)"/>
+        <command commandId="com.aicodepilot.commands.detectBugs"
+                 label="AI Bugs"
+                 tooltip="Scan for bugs (Ctrl+Shift+B)"/>
+      </toolbar>
+    </menuContribution>
+  </extension>
+
+  <!-- ============================================================ -->
+  <!-- KEY BINDINGS                                                  -->
+  <!-- ============================================================ -->
+  <extension point="org.eclipse.ui.bindings">
+    <key commandId="com.aicodepilot.commands.analyzeCode"
+         sequence="M1+M2+A"
+         schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+    <key commandId="com.aicodepilot.commands.generateCode"
+         sequence="M1+M2+G"
+         schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+    <key commandId="com.aicodepilot.commands.detectBugs"
+         sequence="M1+M2+B"
+         schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+    <key commandId="com.aicodepilot.commands.explainCode"
+         sequence="M1+M2+E"
+         schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+  </extension>
+
+  <!-- ============================================================ -->
+  <!-- PREFERENCES                                                   -->
+  <!-- ============================================================ -->
+  <extension point="org.eclipse.ui.preferencePages">
+    <page id="com.aicodepilot.prefs.Main"
+          name="AI Code Pilot"
+          class="com.aicodepilot.ui.dialogs.MainPreferencePage"/>
+    <page id="com.aicodepilot.prefs.Model"
+          name="Model Settings"
+          category="com.aicodepilot.prefs.Main"
+          class="com.aicodepilot.ui.dialogs.ModelPreferencePage"/>
+  </extension>
+
+  <!-- ============================================================ -->
+  <!-- STARTUP                                                       -->
+  <!-- ============================================================ -->
+  <extension point="org.eclipse.ui.startup">
+    <startup class="com.aicodepilot.Activator"/>
+  </extension>
+
+</plugin>
